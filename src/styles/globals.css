@@ -1,54 +1,131 @@
-<?php
+/* src/styles/globals.css */
 
-$apiURI = "https://app.linkila.com/api/get_url/";
+/* Tailwind Base Layers */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-$uuid = '03c7b74d-93bd-4113-ab17-908283ecf577';
+/* Font Imports */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-if (!function_exists('getallheaders')) {
-    function getallheaders() {
-    $headers = [];
-    foreach ($_SERVER as $name => $value) {
-        if (substr($name, 0, 5) == 'HTTP_') {
-            $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
-        }
-    }
-    return $headers;
-    }
+/* Custom Base Styles */
+@layer base {
+  :root {
+    --color-primary: 59 130 246; /* blue-500 */
+    --color-secondary: 99 102 241; /* indigo-500 */
+    --color-accent: 236 72 153; /* pink-500 */
+  }
+
+  html {
+    @apply scroll-smooth;
+  }
+
+  body {
+    @apply bg-gray-50 text-gray-900 antialiased;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  /* Typography */
+  h1 {
+    @apply text-4xl font-bold leading-tight md:text-5xl;
+  }
+
+  h2 {
+    @apply text-3xl font-semibold mb-4;
+  }
+
+  h3 {
+    @apply text-2xl font-semibold mb-3;
+  }
+
+  p {
+    @apply text-gray-600 leading-relaxed mb-4;
+  }
+
+  a {
+    @apply text-blue-600 hover:text-blue-800 transition-colors duration-200;
+  }
+
+  /* Form Elements */
+  input,
+  textarea,
+  select {
+    @apply w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all;
+  }
+
+  button {
+    @apply transition-all duration-200;
+  }
 }
-function get_ip_address()
-{
-    foreach (array('HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_FORWARDED', 'HTTP_X_CLUSTER_CLIENT_IP', 'HTTP_FORWARDED_FOR', 'HTTP_FORWARDED', 'REMOTE_ADDR') as $key) {
-        if (array_key_exists($key, $_SERVER) === true) {
-            foreach (explode(',', $_SERVER[$key]) as $ip) {
-                $ip = trim($ip);
-                if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) !== false) {
-                    return $ip;
-                }
-            }
-        }
-    }
+
+/* Custom Components */
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center rounded-lg font-medium px-6 py-3;
+  }
+
+  .btn-primary {
+    @apply bg-blue-600 hover:bg-blue-700 text-white;
+  }
+
+  .btn-secondary {
+    @apply bg-indigo-600 hover:bg-indigo-700 text-white;
+  }
+
+  .btn-outline {
+    @apply border-2 border-blue-600 text-blue-600 hover:bg-blue-50;
+  }
+
+  .card {
+    @apply bg-white rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-shadow;
+  }
+
+  .section {
+    @apply py-16;
+  }
+
+  .container {
+    @apply mx-auto px-4 max-w-7xl;
+  }
 }
 
-$ip = get_ip_address();
-$postData = array(
-    'uuid' => $uuid,
-    'ip' => $ip ? $ip : "127.0.0.1",
-    'headers' => getallheaders(),
-);
+/* Custom Utilities */
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
 
-$ch = curl_init($apiURI);
-curl_setopt_array($ch, array(
-    CURLOPT_POST => TRUE,
-    CURLOPT_RETURNTRANSFER => TRUE,
-    CURLOPT_HTTPHEADER => array(
-        'Content-Type: application/json'
-    ),
-    CURLOPT_POSTFIELDS => json_encode($postData)
-));
+  .clip-path-hero {
+    clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
+  }
 
-$response = curl_exec($ch);
-if ($response === FALSE) {
-    die(curl_error($ch));
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+  }
 }
-$responseData = json_decode($response, TRUE);
-header('Location: ' . $responseData["url"], true, 302);
+
+/* Custom Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* Print Styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    @apply bg-white text-black;
+  }
+}
